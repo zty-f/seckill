@@ -5,6 +5,9 @@ import com.zty.seckill.pojo.User;
 import com.zty.seckill.vo.LoginVo;
 import com.zty.seckill.vo.RespBean;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  *  服务类
@@ -15,5 +18,5 @@ import com.zty.seckill.vo.RespBean;
  */
 public interface IUserService extends IService<User> {
     //登录
-    RespBean doLogin(LoginVo loginVo);
+    RespBean doLogin(LoginVo loginVo, HttpServletRequest request, HttpServletResponse response);
 }

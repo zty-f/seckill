@@ -5,12 +5,17 @@ import com.zty.seckill.exception.GlobalException;
 import com.zty.seckill.mapper.UserMapper;
 import com.zty.seckill.pojo.User;
 import com.zty.seckill.service.IUserService;
+import com.zty.seckill.utils.CookieUtil;
 import com.zty.seckill.utils.MD5Util;
+import com.zty.seckill.utils.UUIDUtil;
 import com.zty.seckill.vo.LoginVo;
 import com.zty.seckill.vo.RespBean;
 import com.zty.seckill.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -27,7 +32,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private UserMapper userMapper;
 
     @Override
-    public RespBean doLogin(LoginVo loginVo) {
+    public RespBean doLogin(LoginVo loginVo, HttpServletRequest request, HttpServletResponse response) {
         String mobile = loginVo.getMobile();
         String password = loginVo.getPassword();
         ////参数效验 通过注解实现
@@ -46,6 +51,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(!MD5Util.fromPassToDBPass(password,user.getSalt()).equals(user.getPassword())){
             throw new GlobalException(RespBeanEnum.LOGIN_ERROR);
         }
+
+        //生成cookie
+        String ticket = UUIDUtil.uuid();
+        request.getSession().setAttribute(ticket,user);
+        CookieUtil.setCookie(request,response,"userTicket",ticket);
         return RespBean.success();
     }
 }
