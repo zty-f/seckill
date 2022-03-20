@@ -5,13 +5,11 @@ import com.zty.seckill.mapper.UserMapper;
 import com.zty.seckill.pojo.User;
 import com.zty.seckill.service.IUserService;
 import com.zty.seckill.utils.MD5Util;
-import com.zty.seckill.utils.ValidatorUtil;
 import com.zty.seckill.vo.LoginVo;
 import com.zty.seckill.vo.RespBean;
 import com.zty.seckill.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>
