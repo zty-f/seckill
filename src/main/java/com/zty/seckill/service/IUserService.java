@@ -2,6 +2,8 @@ package com.zty.seckill.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zty.seckill.pojo.User;
+import com.zty.seckill.vo.LoginVo;
+import com.zty.seckill.vo.RespBean;
 
 /**
  * <p>
@@ -12,5 +14,6 @@ import com.zty.seckill.pojo.User;
  * @since 2022-03-20
  */
 public interface IUserService extends IService<User> {
-
+    //登录
+    RespBean doLogin(LoginVo loginVo);
 }

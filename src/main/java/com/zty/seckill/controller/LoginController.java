@@ -1,8 +1,10 @@
 package com.zty.seckill.controller;
 
+import com.zty.seckill.service.IUserService;
 import com.zty.seckill.vo.LoginVo;
 import com.zty.seckill.vo.RespBean;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/login")
 @Slf4j
 public class LoginController {
+    @Autowired
+    private IUserService userService;
     /**
      * @ClassName: com.zty.seckill.controller.LoginController.java
      * @Copyright swpu
@@ -35,9 +39,7 @@ public class LoginController {
     @ResponseBody
     @RequestMapping("/doLogin")
     public RespBean doLogin(LoginVo loginVo){
-        log.info("{}",loginVo);
-        return null;
+        return userService.doLogin(loginVo);
     }
-
 
 }
