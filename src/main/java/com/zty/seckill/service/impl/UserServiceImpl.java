@@ -1,6 +1,7 @@
 package com.zty.seckill.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zty.seckill.exception.GlobalException;
 import com.zty.seckill.mapper.UserMapper;
 import com.zty.seckill.pojo.User;
 import com.zty.seckill.service.IUserService;
@@ -39,11 +40,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = userMapper.selectById(mobile);
         //根据手机号获取用户
         if(null==user){
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+            throw new GlobalException(RespBeanEnum.LOGIN_ERROR);
         }
         //判断密码是否正确
         if(!MD5Util.fromPassToDBPass(password,user.getSalt()).equals(user.getPassword())){
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+            throw new GlobalException(RespBeanEnum.LOGIN_ERROR);
         }
         return RespBean.success();
     }
