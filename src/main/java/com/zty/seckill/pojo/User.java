@@ -27,6 +27,7 @@ public class User implements Serializable {
      */
     private Long id;
 
+    //昵称
     private String nickname;
 
     /**
