@@ -1,6 +1,7 @@
 package com.zty.seckill.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Test;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,7 +34,8 @@ public class MD5Util {
     }
 
     //测试
-    public static void main(String[] args) {
+    @Test
+    public  void test() {
         System.out.println(inputPassToFromPass("1234"));//881a8fa8badd9c9992d9d691f4a2548d
 
         System.out.println(fromPassToDBPass("881a8fa8badd9c9992d9d691f4a2548d",salt));//2119da8a396200a7c0333923b8212b77
