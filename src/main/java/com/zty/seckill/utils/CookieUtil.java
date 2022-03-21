@@ -148,6 +148,7 @@ public final class CookieUtil {
             Cookie cookie = new Cookie(cookieName, cookieValue);
             if (cookieMaxage > 0)
                 cookie.setMaxAge(cookieMaxage);
+            //因为这里使用的localhost，所以测试使用localhost进行页面测试，否则会出现页面跳转cookie失效
             if (null != request) {// 设置域名的cookie
                 String domainName = getDomainName(request);
                 System.out.println(domainName);
