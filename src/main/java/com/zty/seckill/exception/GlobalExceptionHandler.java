@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
             respBean.setMessage(respBean.getMessage()+":"+ex.getBindingResult().getAllErrors().get(0).getDefaultMessage());
             return  respBean;
         }
+        e.printStackTrace();
         return RespBean.error(RespBeanEnum.ERROR);
     }
 }
