@@ -81,7 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return null;
         }
         User user = (User) redisTemplate.opsForValue().get("user:" + userTicket);
-        if(user!=null){
+        if(null!=user){
             CookieUtil.setCookie(request,response,"userTicket",userTicket);
         }
         return user;
