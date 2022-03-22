@@ -2,6 +2,10 @@ package com.zty.seckill.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zty.seckill.pojo.Goods;
+import com.zty.seckill.vo.GoodsVo;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +15,9 @@ import com.zty.seckill.pojo.Goods;
  * @author zty
  * @since 2022-03-21
  */
+@Mapper
 public interface GoodsMapper extends BaseMapper<Goods> {
 
+    //获取秒杀商品列表
+    List<GoodsVo> findGoodsVo();
 }

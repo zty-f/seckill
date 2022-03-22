@@ -1,6 +1,7 @@
 package com.zty.seckill.controller;
 
 import com.zty.seckill.pojo.User;
+import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,9 @@ public class GoodsController {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private IGoodsService goodsService;
+
     /**
      * @ClassName: com.zty.seckill.controller.GoodsController.java
      * @Copyright swpu
@@ -40,6 +44,7 @@ public class GoodsController {
         //    return "login";
         //}
         model.addAttribute("user",user);
+        model.addAttribute("goodsList",goodsService.findGoodsVo());
         return "goodsList";
     }
 }
