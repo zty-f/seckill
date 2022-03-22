@@ -2,6 +2,7 @@ package com.zty.seckill.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zty.seckill.pojo.SeckillGoods;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
