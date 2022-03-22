@@ -11,6 +11,7 @@ import com.zty.seckill.pojo.SeckillGoods;
  * @author zty
  * @since 2022-03-21
  */
+@Mapper
 public interface SeckillGoodsMapper extends BaseMapper<SeckillGoods> {
 
 }
