@@ -36,4 +36,23 @@
             as b on a.id = b.id
     </select>
 
+    <!--获取商品详情-->
+    <select id="findGoodsVoByGoodsId" resultType="com.zty.seckill.vo.GoodsVo">
+        select a.id,
+               a.goods_name,
+               a.goods_title,
+               a.goods_img,
+               a.goods_detail,
+               a.goods_price,
+               a.goods_stock,
+               b.seckill_price,
+               b.stock_count,
+               b.start_date,
+               b.end_date
+        from t_goods a
+                 left join t_seckill_goods
+            as b on a.id = b.id
+        where a.id = #{goodsId}
+    </select>
+
 </mapper>

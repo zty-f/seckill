@@ -6,6 +6,7 @@ import com.zty.seckill.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -35,16 +36,28 @@ public class GoodsController {
      */
     @RequestMapping("/toList")
     public String toList(Model model,User user){
-        //if (StringUtils.isEmpty(ticket)){
-        //    return "login";
-        //}
-        ////User user = (User) session.getAttribute(ticket);
-        //User user = userService.getUserByCookie(ticket,request,response);
-        //if (null==user){
-        //    return "login";
-        //}
         model.addAttribute("user",user);
         model.addAttribute("goodsList",goodsService.findGoodsVo());
         return "goodsList";
+    }
+
+
+
+    /**
+     * @MethodName:  toDetail
+     * @param model
+     * @param user
+     * @param goodsId
+     * @Return java.lang.String
+     * @Exception
+     * @Description:  通过商品id获取商品信息
+     * @author: zty-f
+     * @date:  2022-03-22 16:09
+     */
+    @RequestMapping("/toDetail/{goodsId}")
+    public String toDetail(Model model,User user,@PathVariable Long goodsId){
+        model.addAttribute("user",user);
+        model.addAttribute("goods",goodsService.findGoodsVoByGoodsId(goodsId));
+        return "goodsDetail";
     }
 }
