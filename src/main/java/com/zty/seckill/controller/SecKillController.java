@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author: zty-f
  * @date: 2022/3/22 19:32
  * @Description:  秒杀
+ *
+ * windows 优化前 525
  */
 @Controller
 @RequestMapping("/seckill")
