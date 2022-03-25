@@ -2,15 +2,19 @@ package com.zty.seckill.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zty.seckill.exception.GlobalException;
 import com.zty.seckill.mapper.OrderMapper;
 import com.zty.seckill.pojo.Order;
 import com.zty.seckill.pojo.SeckillGoods;
 import com.zty.seckill.pojo.SeckillOrder;
 import com.zty.seckill.pojo.User;
+import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IOrderService;
 import com.zty.seckill.service.ISeckillGoodsService;
 import com.zty.seckill.service.ISeckillOrderService;
 import com.zty.seckill.vo.GoodsVo;
+import com.zty.seckill.vo.OrderDetailVo;
+import com.zty.seckill.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +38,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private ISeckillOrderService seckillOrderService;
+
+    @Autowired
+    private IGoodsService goodsService;
 
     /**
      * @MethodName:  seckill
@@ -72,4 +79,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         seckillOrderService.save(seckillOrder);
         return order;
     }
+
+
+    /**
+     * @MethodName:  detail
+     * @Param  * @param orderId
+     * @Return com.zty.seckill.vo.OrderDetailVo
+     * @Exception
+     * @Description: 订单详情
+     * @author: zty-f
+     * @date:  2022-03-25 20:10
+     * **/
+    @Override
+    public OrderDetailVo detail(Long orderId) {
+        if (orderId==null){
+            throw new GlobalException(RespBeanEnum.ORDER_NOT_EXIST);
+        }
+        Order order = orderMapper.selectById(orderId);
+        GoodsVo goods = goodsService.findGoodsVoByGoodsId(order.getGoodsId());
+        OrderDetailVo detailVo = new OrderDetailVo(order, goods);
+        return detailVo;
+    }
+
+
 }

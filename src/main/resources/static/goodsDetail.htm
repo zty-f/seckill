@@ -80,7 +80,7 @@
                 if(data.code==200){
                     window.location.href="/orderDetail.htm?orderId="+data.obj.id;
                 }else {
-                    layer.msg("客户端请求出错");
+                    layer.msg(data.message);
                 }
             },
             error:function (){
