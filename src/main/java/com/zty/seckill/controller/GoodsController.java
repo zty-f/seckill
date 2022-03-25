@@ -3,7 +3,9 @@ package com.zty.seckill.controller;
 import com.zty.seckill.pojo.User;
 import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IUserService;
+import com.zty.seckill.vo.DetailVo;
 import com.zty.seckill.vo.GoodsVo;
+import com.zty.seckill.vo.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -78,19 +80,19 @@ public class GoodsController {
 
 
     /**
-     * @MethodName:  toDetail
+     * @MethodName:  toDetail2
      * @param model
      * @param user
      * @param goodsId
      * @Return java.lang.String
      * @Exception
-     * @Description:  通过商品id获取商品信息
+     * @Description:  通过商品id获取商品信息 优化前
      * @author: zty-f
      * @date:  2022-03-22 16:09
      */
-    @RequestMapping(value = "/toDetail/{goodsId}",produces = "text/html;charset=utf-8")
+    @RequestMapping(value = "/toDetail2/{goodsId}",produces = "text/html;charset=utf-8")
     @ResponseBody
-    public String toDetail(Model model,User user,@PathVariable Long goodsId,
+    public String toDetail2(Model model,User user,@PathVariable Long goodsId,
                            HttpServletRequest request, HttpServletResponse response){
         //Redis中获取页面，如果不为空，直接返回页面
         ValueOperations valueOperations = redisTemplate.opsForValue();
@@ -128,4 +130,46 @@ public class GoodsController {
         }
         return html;
     }
+
+    /**
+     * @MethodName:  toDetail
+     * @param model
+     * @param user
+     * @param goodsId
+     * @Return java.lang.String
+     * @Exception
+     * @Description:  通过商品id获取商品信息 使用静态页面
+     * @author: zty-f
+     * @date:  2022-03-22 16:09
+     */
+    @RequestMapping("/toDetail/{goodsId}")
+    @ResponseBody
+    public RespBean toDetail(User user, @PathVariable Long goodsId){
+        GoodsVo goodsVo = goodsService.findGoodsVoByGoodsId(goodsId);
+        Date startDate = goodsVo.getStartDate();
+        Date endDate = goodsVo.getEndDate();
+        Date nowDate = new Date();
+        //秒杀状态
+        int secKillStatus = 0;
+        //秒杀倒计时
+        int remainSeconds = 0;
+        //秒杀还未开始
+        if (nowDate.before(startDate)) {
+            remainSeconds = (int) ((startDate.getTime() - nowDate.getTime())/1000);
+        }else if(nowDate.after(endDate)){ //秒杀已结束
+            secKillStatus = 2;
+            remainSeconds = -1;
+        }else { //秒杀进行中
+            secKillStatus = 1;
+            remainSeconds = 0;
+        }
+        DetailVo detailVo = new DetailVo();
+        detailVo.setUser(user);
+        detailVo.setGoodsVo(goodsVo);
+        detailVo.setSecKillStatus(secKillStatus);
+        detailVo.setRemainSeconds(remainSeconds);
+        return RespBean.success(detailVo);
+    }
+
+
 }
