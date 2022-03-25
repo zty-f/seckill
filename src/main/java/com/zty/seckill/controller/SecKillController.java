@@ -8,11 +8,14 @@ import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IOrderService;
 import com.zty.seckill.service.ISeckillOrderService;
 import com.zty.seckill.vo.GoodsVo;
+import com.zty.seckill.vo.RespBean;
 import com.zty.seckill.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @version V1.0
@@ -36,8 +39,41 @@ public class SecKillController {
     @Autowired
     private IOrderService orderService;
 
-    @RequestMapping("/doSeckill")
-    public String doSeckill(Model model, User user, Long goodsId){
+    /**
+     * @MethodName:  doSeckill
+     * @Exception
+     * @Description: 秒杀页面静态化，前后端分离
+     * @author: zty-f
+     * @date:  2022-03-25 15:30
+     */
+    @RequestMapping(value = "/doSeckill", method = RequestMethod.POST)
+    @ResponseBody
+    public RespBean doSeckill(Model model, User user, Long goodsId){
+        if(null==user){
+            return RespBean.error(RespBeanEnum.SESSION_ERROR);
+        }
+        System.out.println(goodsId);
+        GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
+        //判断库存
+        if(goods.getStockCount()<1){
+            model.addAttribute("errmsg", RespBeanEnum.EMPTY_STOCK.getMessage());
+            return RespBean.error(RespBeanEnum.EMPTY_STOCK);
+        }
+        //判断是否重复抢购
+        SeckillOrder seckillOrder = seckillOrderService
+                .getOne(new QueryWrapper<SeckillOrder>()
+                        .eq("user_id", user.getId())
+                        .eq("goods_id", goodsId));
+        if(seckillOrder!=null){
+            model.addAttribute("errmsg",RespBeanEnum.REPEAT_ERROR.getMessage());
+            return RespBean.error(RespBeanEnum.REPEAT_ERROR);
+        }
+        Order order = orderService.seckill(user,goods);
+        return RespBean.success(order);
+    }
+
+    @RequestMapping("/doSeckill2")
+    public String doSeckill2(Model model, User user, Long goodsId){
         if(null==user){
             return "login";
         }
