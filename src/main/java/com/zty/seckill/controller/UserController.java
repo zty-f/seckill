@@ -67,4 +67,25 @@ public class UserController {
     public void mq01(){
         mqSender.send("Hello rabbitMQ-fanout!");
     }
+
+    /**
+     * @MethodName:  mq02
+     * @Param
+     * @Return void
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-26 21:19
+     * @Description: direct交换机
+     * **/
+    @RequestMapping("/mq/direct01")
+    @ResponseBody
+    public void mq02(){
+        mqSender.send01("Hello rabbitMQ-direct001!");
+    }
+
+    @RequestMapping("/mq/direct02")
+    @ResponseBody
+    public void mq03(){
+        mqSender.send02("Hello rabbitMQ-direct002!");
+    }
 }
