@@ -88,4 +88,25 @@ public class UserController {
     public void mq03(){
         mqSender.send02("Hello rabbitMQ-direct002!");
     }
+
+    /**
+     * @MethodName:  mq04
+     * @Param
+     * @Return void
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-27 10:48
+     * @Description: topic 交换机模式
+     * **/
+    @RequestMapping("/mq/topic01")
+    @ResponseBody
+    public void mq04(){
+        mqSender.send03("只能queue01接收！！！！！");
+    }
+
+    @RequestMapping("/mq/topic02")
+    @ResponseBody
+    public void mq05(){
+        mqSender.send04("queue01和queue02都接收！！！！！");
+    }
 }

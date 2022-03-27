@@ -34,4 +34,14 @@ public class MQSender {
         rabbitTemplate.convertAndSend("directExchange","queue002",msg);
     }
 
+    public void send03(Object msg){
+        log.info("发送queue01接收的消息"+msg);
+        rabbitTemplate.convertAndSend("topicExchange","zty.zty.queue.fmj",msg);
+    }
+
+    public void send04(Object msg){
+        log.info("发送queue01和queue02接收的消息"+msg);
+        rabbitTemplate.convertAndSend("topicExchange","zty.queue.fmj.fmj",msg);
+    }
+
 }
