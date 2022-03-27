@@ -1,8 +1,17 @@
 package com.zty.seckill.rabbitmq;
 
+import com.zty.seckill.pojo.SeckillMessage;
+import com.zty.seckill.pojo.SeckillOrder;
+import com.zty.seckill.pojo.User;
+import com.zty.seckill.service.IGoodsService;
+import com.zty.seckill.service.IOrderService;
+import com.zty.seckill.utils.JsonUtil;
+import com.zty.seckill.vo.GoodsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +25,44 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class MQReceiver {
+
+    @Autowired
+    private IGoodsService goodsService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private IOrderService orderService;
+
+    /**
+     * @MethodName:  receiverSeckillMessage
+     * @Param msg
+     * @Return void
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-27 15:40
+     * @Description: 获取秒杀信息并执行下单操作
+     * **/
+    @RabbitListener(queues = "seckillQueue")
+    public void receiverSeckillMessage(String msg){
+        log.info("接收到的秒杀消息："+msg);
+        SeckillMessage seckillMessage = JsonUtil.jsonStr2Object(msg,SeckillMessage.class);
+        Long goodsId = seckillMessage.getGoodsId();
+        User user = seckillMessage.getUser();
+        //判断库存
+        GoodsVo goodsVo = goodsService.findGoodsVoByGoodsId(goodsId);
+        if (goodsVo.getStockCount()<1){
+            return;
+        }
+        //判断是否重复抢购
+        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
+        if(seckillOrder!=null){
+            return;
+        }
+        //下单操作
+        orderService.seckill(user,goodsVo);
+    }
 
     @RabbitListener(queues = "queue")
     public void receiver(Object msg){

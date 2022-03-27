@@ -21,6 +21,24 @@ public class MQSender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+
+    /**
+     * @MethodName:  sendSeckillMessage
+     * @Param message
+     * @Return void
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-27 15:24
+     * @Description: 发送秒杀信息
+     * **/
+    public void sendSeckillMessage(String message){
+        log.info("发送消息："+message);
+        rabbitTemplate.convertAndSend("seckillExchange","seckill.message",message);
+    }
+
+
+
+    // 测试使用
     public void send(Object msg){
         log.info("发送消息"+msg);
         rabbitTemplate.convertAndSend("fanoutExchange","",msg);
