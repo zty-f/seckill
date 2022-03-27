@@ -1,6 +1,8 @@
 package com.zty.seckill.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,24 @@ public class MQSender {
     public void send04(Object msg){
         log.info("发送queue01和queue02接收的消息"+msg);
         rabbitTemplate.convertAndSend("topicExchange","zty.queue.fmj.fmj",msg);
+    }
+
+    public void send05(String msg){
+        log.info("发送queue01和queue02接收的消息"+msg);
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setHeader("color","red");
+        messageProperties.setHeader("speed","fast");
+        Message message = new Message(msg.getBytes(), messageProperties);
+        rabbitTemplate.convertAndSend("headersExchange","",message);
+    }
+
+    public void send06(String msg){
+        log.info("发送queue01接收的消息"+msg);
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setHeader("color","red");
+        messageProperties.setHeader("speed","normal");
+        Message message = new Message(msg.getBytes(), messageProperties);
+        rabbitTemplate.convertAndSend("headersExchange","",message);
     }
 
 }

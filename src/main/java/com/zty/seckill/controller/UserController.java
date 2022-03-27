@@ -109,4 +109,25 @@ public class UserController {
     public void mq05(){
         mqSender.send04("queue01和queue02都接收！！！！！");
     }
+
+    /**
+     * @MethodName:  mq06
+     * @Param
+     * @Return void
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-27 11:26
+     * @Description: headers 交换机
+     * **/
+    @RequestMapping("/mq/headers01")
+    @ResponseBody
+    public void mq06(){
+        mqSender.send05("queue01和queue02都接收！！！！！");
+    }
+
+    @RequestMapping("/mq/headers02")
+    @ResponseBody
+    public void mq07(){
+        mqSender.send06("只能queue01接收！！！！！");
+    }
 }
