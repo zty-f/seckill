@@ -1,8 +1,6 @@
 package com.zty.seckill.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +37,7 @@ public class MQSender {
 
 
     // 测试使用
-    public void send(Object msg){
+    /*public void send(Object msg){
         log.info("发送消息"+msg);
         rabbitTemplate.convertAndSend("fanoutExchange","",msg);
     }
@@ -80,6 +78,6 @@ public class MQSender {
         messageProperties.setHeader("speed","normal");
         Message message = new Message(msg.getBytes(), messageProperties);
         rabbitTemplate.convertAndSend("headersExchange","",message);
-    }
+    }*/
 
 }

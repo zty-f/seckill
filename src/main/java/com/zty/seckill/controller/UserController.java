@@ -47,28 +47,28 @@ public class UserController {
      * @date:  2022-03-26 20:30
      * @Description: RabbitMQ 消息发送测试
      * **/
-    @RequestMapping("/mq")
+    /*@RequestMapping("/mq")
     @ResponseBody
     public void mq(){
         mqSender.send("Hello rabbitMQ!");
     }
 
-    /**
+    *//**
      * @MethodName:  mq01
-     * @Param 
+     * @Param
      * @Return void
-     * @Exception 
+     * @Exception
      * @author: zty-f
      * @date:  2022-03-26 21:00
      * @Description: fanout交换机
-     * **/
+     * **//*
     @RequestMapping("/mq/fanout")
     @ResponseBody
     public void mq01(){
         mqSender.send("Hello rabbitMQ-fanout!");
     }
 
-    /**
+    *//**
      * @MethodName:  mq02
      * @Param
      * @Return void
@@ -76,7 +76,7 @@ public class UserController {
      * @author: zty-f
      * @date:  2022-03-26 21:19
      * @Description: direct交换机
-     * **/
+     * **//*
     @RequestMapping("/mq/direct01")
     @ResponseBody
     public void mq02(){
@@ -89,7 +89,7 @@ public class UserController {
         mqSender.send02("Hello rabbitMQ-direct002!");
     }
 
-    /**
+    *//**
      * @MethodName:  mq04
      * @Param
      * @Return void
@@ -97,7 +97,7 @@ public class UserController {
      * @author: zty-f
      * @date:  2022-03-27 10:48
      * @Description: topic 交换机模式
-     * **/
+     * **//*
     @RequestMapping("/mq/topic01")
     @ResponseBody
     public void mq04(){
@@ -110,7 +110,7 @@ public class UserController {
         mqSender.send04("queue01和queue02都接收！！！！！");
     }
 
-    /**
+    *//**
      * @MethodName:  mq06
      * @Param
      * @Return void
@@ -118,7 +118,7 @@ public class UserController {
      * @author: zty-f
      * @date:  2022-03-27 11:26
      * @Description: headers 交换机
-     * **/
+     * **//*
     @RequestMapping("/mq/headers01")
     @ResponseBody
     public void mq06(){
@@ -129,5 +129,5 @@ public class UserController {
     @ResponseBody
     public void mq07(){
         mqSender.send06("只能queue01接收！！！！！");
-    }
+    }*/
 }

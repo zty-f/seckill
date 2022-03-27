@@ -9,6 +9,7 @@ import com.zty.seckill.rabbitmq.MQSender;
 import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IOrderService;
 import com.zty.seckill.service.ISeckillOrderService;
+import com.zty.seckill.utils.JsonUtil;
 import com.zty.seckill.vo.GoodsVo;
 import com.zty.seckill.vo.RespBean;
 import com.zty.seckill.vo.RespBeanEnum;
@@ -23,8 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version V1.0
@@ -54,6 +56,8 @@ public class SecKillController implements InitializingBean {
     @Autowired
     private MQSender mqSender;
 
+    private Map<Long,Boolean> EmptyStock = new HashMap<>();
+
     /**
      * @MethodName:  doSeckill
      * @Exception
@@ -69,19 +73,25 @@ public class SecKillController implements InitializingBean {
         }
         ValueOperations valueOperations = redisTemplate.opsForValue();
         //判断是否重复抢购
-        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goods.getId());
+        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
 
         if(seckillOrder!=null){
             return RespBean.error(RespBeanEnum.REPEAT_ERROR);
         }
+        //通过内存标记，减少Redis访问
+        if(EmptyStock.get(goodsId)){
+            return RespBean.error(RespBeanEnum.EMPTY_STOCK);
+        }
         //预减库存  redis中decrement为原子性操作
         Long stock = valueOperations.decrement("seckillGoods:" + goodsId);
         if(stock<0){
+            EmptyStock.put(goodsId,true);
             valueOperations.increment("seckillGoods:" + goodsId);
             return RespBean.error(RespBeanEnum.EMPTY_STOCK);
         }
-
-        return RespBean.success(order);
+        SeckillMessage seckillMessage = new SeckillMessage(user,goodsId);
+        mqSender.sendSeckillMessage(JsonUtil.object2JsonStr(seckillMessage));
+        return RespBean.success(0);
         /*
         GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
         //判断库存
@@ -97,8 +107,6 @@ public class SecKillController implements InitializingBean {
         Order order = orderService.seckill(user,goods);
         return RespBean.success(order);
         */
-
-        return null;
     }
 
     @RequestMapping("/doSeckill2")
@@ -129,11 +137,25 @@ public class SecKillController implements InitializingBean {
     }
 
     /**
-     * @MethodName:  afterPropertiesSet
-     * @Param 
-     * @Return void
-     * @Exception 
+     * @MethodName:  getResult
+     * @Param user goodsId
+     * @Return com.zty.seckill.vo.RespBean
+     * @Exception
      * @author: zty-f
+     * @date:  2022-03-27 16:13
+     * @Description: 获取秒杀结果 orderId：成功 -1：秒杀失败 0：排队中
+     * **/
+    @RequestMapping(value = "/getResult",method = RequestMethod.GET)
+    @ResponseBody
+    public RespBean getResult(User user,Long goodsId){
+        if (null==user){
+            return RespBean.error(RespBeanEnum.SESSION_ERROR);
+        }
+        Long orderId = seckillOrderService.getResult(user,goodsId);
+        return RespBean.success(orderId);
+    }
+
+    /**
      * @date:  2022-03-27 14:54
      * @Description: 系统初始化会自动执行的方法，把商品库存加载到Redis中
      * **/
@@ -145,6 +167,7 @@ public class SecKillController implements InitializingBean {
         }
         list.forEach(goodsVo -> {
             redisTemplate.opsForValue().set("seckillGoods:"+goodsVo.getId(),goodsVo.getStockCount());
+            EmptyStock.put(goodsVo.getId(),false);
         });
     }
 }

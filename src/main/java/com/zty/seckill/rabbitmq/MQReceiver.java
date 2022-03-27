@@ -8,7 +8,6 @@ import com.zty.seckill.service.IOrderService;
 import com.zty.seckill.utils.JsonUtil;
 import com.zty.seckill.vo.GoodsVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -64,7 +63,8 @@ public class MQReceiver {
         orderService.seckill(user,goodsVo);
     }
 
-    @RabbitListener(queues = "queue")
+    //RabbitMQ测试
+    /*@RabbitListener(queues = "queue")
     public void receiver(Object msg){
         log.info("接收消息："+msg);
     }
@@ -109,6 +109,6 @@ public class MQReceiver {
     public void receiver08(Message msg){
         log.info("QUEUE002接收Message对象："+msg);
         log.info("QUEUE002接收消息："+new String(msg.getBody()));
-    }
+    }*/
 
 }
