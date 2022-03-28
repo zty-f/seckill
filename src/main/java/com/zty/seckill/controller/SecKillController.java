@@ -1,6 +1,8 @@
 package com.zty.seckill.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.wf.captcha.ArithmeticCaptcha;
+import com.zty.seckill.exception.GlobalException;
 import com.zty.seckill.pojo.Order;
 import com.zty.seckill.pojo.SeckillMessage;
 import com.zty.seckill.pojo.SeckillOrder;
@@ -13,6 +15,7 @@ import com.zty.seckill.utils.JsonUtil;
 import com.zty.seckill.vo.GoodsVo;
 import com.zty.seckill.vo.RespBean;
 import com.zty.seckill.vo.RespBeanEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,10 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version V1.0
@@ -40,6 +46,7 @@ import java.util.Map;
  *
  * windows 优化前 525
  */
+@Slf4j
 @Controller
 @RequestMapping("/seckill")
 public class SecKillController implements InitializingBean {
@@ -170,6 +177,26 @@ public class SecKillController implements InitializingBean {
         }
         String str = orderService.createPath(user,goodsId);
         return RespBean.success(str);
+    }
+
+    @RequestMapping(value = "/captcha",method = RequestMethod.GET)
+    public void verify(User user, Long goodsId, HttpServletResponse response){
+        if (user==null||goodsId<0){
+            throw new GlobalException(RespBeanEnum.SESSION_ERROR);
+        }
+        //设置响应头为输出图片的类型
+        response.setContentType("image/jpg");
+        response.setHeader("Pragma","No-cache");
+        response.setHeader("Cache-Control","no-cache");
+        response.setDateHeader("Expires",0);
+        //生成验证码 结果放入redis
+        ArithmeticCaptcha captcha = new ArithmeticCaptcha(130, 32, 3);
+        redisTemplate.opsForValue().set("captcha:"+user.getId()+":"+goodsId,captcha.text(),300, TimeUnit.SECONDS);
+        try {
+            captcha.out(response.getOutputStream());
+        } catch (IOException e) {
+            log.error("验证码生成失败！",e.getMessage());
+        }
     }
 
     /**
