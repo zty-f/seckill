@@ -50,9 +50,9 @@ spring:
 
   # redis配置
   redis:
-    host: 192.168.0.102
+    host: 47.108.239.8
     port: 6379
-    password:
+    password: 123456
     # 数据库
     database: 0
     #超时时间
