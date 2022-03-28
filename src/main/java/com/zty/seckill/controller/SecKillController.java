@@ -21,6 +21,7 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -70,15 +71,19 @@ public class SecKillController implements InitializingBean {
      * @author: zty-f
      * @date:  2022-03-25 15:30
      */
-    @RequestMapping(value = "/doSeckill", method = RequestMethod.POST)
+    @RequestMapping(value = "/{path}/doSeckill", method = RequestMethod.POST)
     @ResponseBody
-    public RespBean doSeckill(Model model, User user, Long goodsId){
+    public RespBean doSeckill(@PathVariable String path, User user, Long goodsId){
         if(null==user){
             return RespBean.error(RespBeanEnum.SESSION_ERROR);
         }
         ValueOperations valueOperations = redisTemplate.opsForValue();
+        Boolean check = orderService.checkPath(user,goodsId,path);
+        if (!check){
+            return RespBean.error(RespBeanEnum.REQUEST_ILLEGAL);
+        }
         //判断是否重复抢购
-        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
+        SeckillOrder seckillOrder = (SeckillOrder) valueOperations.get("order:" + user.getId() + ":" + goodsId);
 
         if(seckillOrder!=null){
             return RespBean.error(RespBeanEnum.REPEAT_ERROR);
@@ -99,21 +104,6 @@ public class SecKillController implements InitializingBean {
         SeckillMessage seckillMessage = new SeckillMessage(user,goodsId);
         mqSender.sendSeckillMessage(JsonUtil.object2JsonStr(seckillMessage));
         return RespBean.success(0);
-        /*
-        GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
-        //判断库存
-        if(goods.getStockCount()<1){
-            return RespBean.error(RespBeanEnum.EMPTY_STOCK);
-        }
-        //判断是否重复抢购
-        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goods.getId());
-
-        if(seckillOrder!=null){
-            return RespBean.error(RespBeanEnum.REPEAT_ERROR);
-        }
-        Order order = orderService.seckill(user,goods);
-        return RespBean.success(order);
-        */
     }
 
     @RequestMapping("/doSeckill2")
@@ -160,6 +150,26 @@ public class SecKillController implements InitializingBean {
         }
         Long orderId = seckillOrderService.getResult(user,goodsId);
         return RespBean.success(orderId);
+    }
+
+    /**
+     * @MethodName:  getPath
+     * @Param user
+    goodsId
+     * @Return com.zty.seckill.vo.RespBean
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-28 19:49
+     * @Description: 获取秒杀接口地址
+     * **/
+    @RequestMapping(value = "/path",method = RequestMethod.GET)
+    @ResponseBody
+    public RespBean getPath(User user,Long goodsId){
+        if (null==user){
+            return RespBean.error(RespBeanEnum.SESSION_ERROR);
+        }
+        String str = orderService.createPath(user,goodsId);
+        return RespBean.success(str);
     }
 
     /**

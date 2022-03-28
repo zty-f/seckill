@@ -13,6 +13,8 @@ import com.zty.seckill.service.IGoodsService;
 import com.zty.seckill.service.IOrderService;
 import com.zty.seckill.service.ISeckillGoodsService;
 import com.zty.seckill.service.ISeckillOrderService;
+import com.zty.seckill.utils.MD5Util;
+import com.zty.seckill.utils.UUIDUtil;
 import com.zty.seckill.vo.GoodsVo;
 import com.zty.seckill.vo.OrderDetailVo;
 import com.zty.seckill.vo.RespBeanEnum;
@@ -21,8 +23,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -117,6 +121,42 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         GoodsVo goods = goodsService.findGoodsVoByGoodsId(order.getGoodsId());
         OrderDetailVo detailVo = new OrderDetailVo(order, goods);
         return detailVo;
+    }
+
+    /**
+     * @MethodName:  createPath
+     * @Param user
+    goodsId
+     * @Return java.lang.String
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-28 19:52
+     * @Description: 获取秒杀接口地址
+     * **/
+    @Override
+    public String createPath(User user, Long goodsId) {
+        String str = MD5Util.md5(UUIDUtil.uuid() + "123456");
+        redisTemplate.opsForValue().set("seckillPath:"+user.getId()+":"+goodsId,str,60, TimeUnit.SECONDS);
+        return str;
+    }
+
+    /**
+     * @MethodName:  checkPath
+     * @Param user
+    goodsId
+     * @Return java.lang.Boolean
+     * @Exception
+     * @author: zty-f
+     * @date:  2022-03-28 20:05
+     * @Description: 检查接口地址正确性
+     * **/
+    @Override
+    public Boolean checkPath(User user, Long goodsId,String path) {
+        if(user==null||goodsId<0|| StringUtils.isEmpty(path)){
+            return false;
+        }
+        String  redisPath= (String) redisTemplate.opsForValue().get("seckillPath:" + user.getId() + ":" + goodsId);
+        return path.equals(redisPath);
     }
 
 
