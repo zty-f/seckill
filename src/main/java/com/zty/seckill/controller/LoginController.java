@@ -21,7 +21,6 @@ import javax.validation.Valid;
  * @Description: 登录
  */
 @Controller
-@RequestMapping("/login")
 @Slf4j
 public class LoginController {
     @Autowired
@@ -34,13 +33,13 @@ public class LoginController {
      * @version V1.0
      * @Description:   跳转登录页面
      */
-    @RequestMapping("/toLogin")
+    @RequestMapping("/")
     public String toLogin(){
         return "login";
     }
 
     @ResponseBody
-    @RequestMapping("/doLogin")
+    @RequestMapping("/login/doLogin")
     public RespBean doLogin(@Valid LoginVo loginVo, HttpServletRequest request, HttpServletResponse response){
         return userService.doLogin(loginVo,request,response);
     }

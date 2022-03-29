@@ -150,7 +150,8 @@ public final class CookieUtil {
                 cookie.setMaxAge(cookieMaxage);
             //因为这里使用的localhost，所以测试使用localhost进行页面测试，否则会出现页面跳转cookie失效
             if (null != request) {// 设置域名的cookie
-                String domainName = getDomainName(request);
+                //String domainName = getDomainName(request);
+                String domainName = "seckill.zty-f.fun";
                 System.out.println(domainName);
                 if (!"localhost".equals(domainName)) {
                     cookie.setDomain(domainName);
