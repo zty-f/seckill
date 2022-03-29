@@ -151,7 +151,8 @@ public final class CookieUtil {
             //因为这里使用的localhost，所以测试使用localhost进行页面测试，否则会出现页面跳转cookie失效
             if (null != request) {// 设置域名的cookie
                 //String domainName = getDomainName(request);
-                String domainName = "seckill.zty-f.fun";
+                //String domainName = "seckill.zty-f.fun";
+                String domainName = "127.0.0.1";
                 System.out.println(domainName);
                 if (!"localhost".equals(domainName)) {
                     cookie.setDomain(domainName);
