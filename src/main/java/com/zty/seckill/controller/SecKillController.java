@@ -2,6 +2,7 @@ package com.zty.seckill.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wf.captcha.ArithmeticCaptcha;
+import com.zty.seckill.config.AccessLimit;
 import com.zty.seckill.exception.GlobalException;
 import com.zty.seckill.pojo.Order;
 import com.zty.seckill.pojo.SeckillMessage;
@@ -170,22 +171,12 @@ public class SecKillController implements InitializingBean {
      * @date:  2022-03-28 19:49
      * @Description: 获取秒杀接口地址
      * **/
+    @AccessLimit(second = 5,maxCount = 5,needLogin=true)
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
     public RespBean getPath(User user, Long goodsId, String captcha, HttpServletRequest request){
         if (null==user){
             return RespBean.error(RespBeanEnum.SESSION_ERROR);
-        }
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        //限制访问次数，5秒内访问5次
-        String uri = request.getRequestURI();
-        Integer count = (Integer) valueOperations.get(uri + ":" + user.getId());
-        if (count==null){
-            valueOperations.set(uri+":"+user.getId(),1,5,TimeUnit.SECONDS);
-        }else if(count<5){
-            valueOperations.increment(uri+":"+user.getId());
-        }else {
-            return RespBean.error(RespBeanEnum.ACCESS_LIMIT_REACHED);
         }
         Boolean check = orderService.checkCaptcha(user,goodsId,captcha);
         if(!check){
